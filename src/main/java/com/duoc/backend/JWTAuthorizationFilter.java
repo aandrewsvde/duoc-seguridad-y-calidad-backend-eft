@@ -16,11 +16,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
 
 import static com.duoc.backend.Constants.*;
 
 @Component
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     private Claims setSigningKey(HttpServletRequest request) {
         String jwtToken = request.
@@ -28,7 +32,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
                 replace(TOKEN_BEARER_PREFIX, "");
 
                 return Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey(SUPER_SECRET_KEY))
+                .verifyWith((SecretKey) getSigningKey(jwtSecret))
                 .build()
                 .parseSignedClaims(jwtToken)
                 .getPayload();

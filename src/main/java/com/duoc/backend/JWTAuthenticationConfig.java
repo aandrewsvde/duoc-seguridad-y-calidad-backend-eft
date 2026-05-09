@@ -1,6 +1,7 @@
 package com.duoc.backend;
 
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -14,6 +15,9 @@ import java.util.stream.Collectors;
 import static com.duoc.backend.Constants.*;
 @Configuration
 public class JWTAuthenticationConfig {
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     public String getJWTToken(String username) {
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
@@ -33,7 +37,7 @@ public class JWTAuthenticationConfig {
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1440))
                 .and()
-                .signWith(getSigningKey(SUPER_SECRET_KEY))
+                .signWith(getSigningKey(jwtSecret))
                 .compact();
 
         return "Bearer " + token;

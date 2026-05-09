@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 
 import static com.duoc.backend.Constants.HEADER_AUTHORIZACION_KEY;
-import static com.duoc.backend.Constants.SUPER_SECRET_KEY;
 import static com.duoc.backend.Constants.TOKEN_BEARER_PREFIX;
 import static com.duoc.backend.Constants.getSigningKey;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,7 +27,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = true)
 @Import({WebSecurityConfig.class, JWTAuthorizationFilter.class, TestSecurityEndpointsController.class})
 @ActiveProfiles("default")
+@SuppressWarnings("java:S6437")
 class WebSecurityConfigTest {
+
+    private static final String TEST_JWT_SECRET =
+            "test-jwt-secret-key-for-unit-testing-only-not-for-production";
 
     @Autowired
     private MockMvc mockMvc;
@@ -89,7 +92,7 @@ class WebSecurityConfigTest {
                 .claim("authorities", authorities)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 60_000))
-                .signWith(getSigningKey(SUPER_SECRET_KEY))
+                .signWith(getSigningKey(TEST_JWT_SECRET))
                 .compact();
     }
 }
